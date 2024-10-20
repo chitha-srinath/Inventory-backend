@@ -119,7 +119,8 @@ class LoginController implements ILoginControllerInterface {
           secure: true,
           sameSite: "none",
           path: "/",
-          domain: "localhost", // or your API domain
+          // domain: "localhost", // or your API domain
+          domain: process.env.DOMAIN_URL!,
         });
         // res.clearCookie("refresh");
         res.clearCookie("refresh", {
@@ -127,7 +128,8 @@ class LoginController implements ILoginControllerInterface {
           secure: true,
           sameSite: "none",
           path: "/",
-          domain: "localhost", // or your API domain
+          // domain: "localhost", // or your API domain
+          domain: process.env.DOMAIN_URL!,
         });
         result = HandleResponse.handleResponse(true, 200, serviceInfo.message);
         return res.send(result);

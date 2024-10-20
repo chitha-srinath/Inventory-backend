@@ -28,6 +28,15 @@ class App {
     this.app.use(express.json());
 
     this.app.use(express.urlencoded({ extended: true }));
+    this.app.use((_, res, next) => {
+      res.set(
+        "Cache-Control",
+        "no-store, no-cache, must-revalidate, proxy-revalidate"
+      );
+      res.set("Pragma", "no-cache");
+      res.set("Expires", "0");
+      next();
+    });
   }
 
   private routesConfig(): void {

@@ -37,6 +37,9 @@ class App {
       res.set("Expires", "0");
       next();
     });
+    this.app.route("/").get((_, res: Response) => {
+      res.send("server is running sucessfully");
+    });
   }
 
   private routesConfig(): void {

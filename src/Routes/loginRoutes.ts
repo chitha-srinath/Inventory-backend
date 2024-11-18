@@ -13,6 +13,7 @@ class LoginRoutes {
 
   private initializeRoutes(): void {
     this.router.route("/login").post(this.loginController.login.bind(this.loginController));
+    this.router.route("/mobileLogin").post(this.loginController.login.bind(this.loginController));
     this.router.route("/register").post(this.loginController.register.bind(this.loginController));
     this.router.route("/getUserDetails").get(Authentication, this.loginController.getuser.bind(this.loginController));
     this.router.route("/signout").get(Authentication, this.loginController.logout.bind(this.loginController));

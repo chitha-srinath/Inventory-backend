@@ -43,7 +43,7 @@ class LoginService implements ISignInServiceInterface {
 
     let { username } = userData;
 
-    let acessToken = this.tokenManger.generateToken({ email, username }, 60 * 60);
+    let acessToken = this.tokenManger.generateToken({ email, username }, 5 * 60);
     let refreshToken = this.tokenManger.generateToken(userData._id, 60 * 60 * 1000);
 
     return { refreshToken, acessToken, message: "login sucessfully" };

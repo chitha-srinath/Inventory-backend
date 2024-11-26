@@ -113,23 +113,38 @@ class LoginController implements ILoginControllerInterface {
       let result: ApiResponse;
 
       if (serviceInfo?.message) {
-        // res.clearCookie("access");
+        // res.clearCookie("access", {
+        //   httpOnly: true,
+        //   secure: true,
+        //   sameSite: "none",
+        //   path: "/",
+        //   // domain: "localhost", // or your API domain
+        //   domain: process.env.DOMAIN_URL!,
+        // });
         res.clearCookie("access", {
-          httpOnly: true,
-          secure: true,
-          sameSite: "none",
+          //domain: process.env.DOMAIN_URL!,
+          //maxAge: 1000 * 60 * 15, // would expire after 15 minutes
+          httpOnly: true, // The cookie only accessible by the web server
+          secure: true, // Set to true if your site is served via HTTPS
           path: "/",
-          // domain: "localhost", // or your API domain
-          domain: process.env.DOMAIN_URL!,
+          sameSite: "none", // Enforce strict SameSite mode
+          expires: new Date(Date.now() + 0),
         });
-        // res.clearCookie("refresh");
+
+        // res.clearCookie("refresh", {
+        //   httpOnly: true,
+        //   secure: true,
+        //   sameSite: "none",
+        //   path: "/",
+        //   // domain: "localhost", // or your API domain
+        //   domain: process.env.DOMAIN_URL!,
+        // });
         res.clearCookie("refresh", {
-          httpOnly: true,
-          secure: true,
-          sameSite: "none",
+          httpOnly: true, // The cookie only accessible by the web server
+          secure: true, // Set to true if your site is served via HTTPS
           path: "/",
-          // domain: "localhost", // or your API domain
-          domain: process.env.DOMAIN_URL!,
+          sameSite: "none", // Enforce strict SameSite modes
+          expires: new Date(Date.now() + 0),
         });
         result = HandleResponse.handleResponse(true, 200, serviceInfo.message);
         return res.send(result);

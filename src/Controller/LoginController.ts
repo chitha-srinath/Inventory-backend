@@ -1,12 +1,11 @@
 import { Request, Response } from "express";
 import HandleResponse, { ApiResponse } from "../Utility/ResponseHandle";
-import LoginService, {
-  ISignInServiceInterface,
-} from "../Services/LoginService";
+import LoginService, { ISignInServiceInterface } from "../Services/LoginService";
 import { IGetUserAuthInfoRequest } from "../Utility/RequestModifier";
 
 export interface ILoginControllerInterface {
   login(req: Request, res: Response): Promise<any>;
+  mobileLogin(req: Request, res: Response): Promise<any>;
   register(req: Request, res: Response): Promise<any>;
   getuser(req: Request, res: Response): Promise<any>;
   logout(req: Request, res: Response): Promise<any>;
@@ -50,15 +49,27 @@ class LoginController implements ILoginControllerInterface {
       }
     } catch (err) {
       console.log(err);
-      const result: ApiResponse = HandleResponse.handleResponse(
-        false,
-        500,
-        "Login failed"
-      );
+      const result: ApiResponse = HandleResponse.handleResponse(false, 500, "Login failed");
       return res.send(result);
     }
   }
-
+  public async mobileLogin(req: Request, res: Response): Promise<any> {
+    try {
+      const serviceInfo = await this.loginService.signIn(req.body);
+      let result;
+      if (serviceInfo?.message) {
+        result = HandleResponse.handleResponse(true, 200, serviceInfo.acessToken);
+        return res.send(result);
+      } else {
+        result = HandleResponse.handleResponse(false, 400, serviceInfo.error);
+        return res.status(400).send(result);
+      }
+    } catch (err) {
+      console.log(err);
+      const result: ApiResponse = HandleResponse.handleResponse(false, 500, "Login failed");
+      return res.send(result);
+    }
+  }
   public async register(req: Request, res: Response): Promise<any> {
     try {
       const serviceInfo = await this.loginService.signUp(req.body);
@@ -72,42 +83,24 @@ class LoginController implements ILoginControllerInterface {
         return res.status(400).send(result);
       }
     } catch (err) {
-      const result: ApiResponse = HandleResponse.handleResponse(
-        false,
-        500,
-        "Register failed"
-      );
+      const result: ApiResponse = HandleResponse.handleResponse(false, 500, "Register failed");
       return res.send(result);
     }
   }
 
-  public async getuser(
-    req: IGetUserAuthInfoRequest,
-    res: Response
-  ): Promise<any> {
+  public async getuser(req: IGetUserAuthInfoRequest, res: Response): Promise<any> {
     try {
       const serviceInfo = await this.loginService.getuserInfo(req.userDetails);
 
-      const result: ApiResponse = HandleResponse.handleResponse(
-        true,
-        200,
-        serviceInfo
-      );
+      const result: ApiResponse = HandleResponse.handleResponse(true, 200, serviceInfo);
       return res.send(result);
     } catch (err) {
-      const result: ApiResponse = HandleResponse.handleResponse(
-        false,
-        500,
-        "fetch user failed"
-      );
+      const result: ApiResponse = HandleResponse.handleResponse(false, 500, "fetch user failed");
       return res.send(result);
     }
   }
 
-  public async logout(
-    req: IGetUserAuthInfoRequest,
-    res: Response
-  ): Promise<any> {
+  public async logout(req: IGetUserAuthInfoRequest, res: Response): Promise<any> {
     try {
       const serviceInfo = await this.loginService.signOut(req.userDetails);
       let result: ApiResponse;
@@ -149,26 +142,15 @@ class LoginController implements ILoginControllerInterface {
         result = HandleResponse.handleResponse(true, 200, serviceInfo.message);
         return res.send(result);
       } else {
-        result = HandleResponse.handleResponse(
-          false,
-          400,
-          "couldn't signout user"
-        );
+        result = HandleResponse.handleResponse(false, 400, "couldn't signout user");
         return res.status(500).send(result);
       }
     } catch (err) {
-      const result: ApiResponse = HandleResponse.handleResponse(
-        false,
-        500,
-        "couldn't logout user"
-      );
+      const result: ApiResponse = HandleResponse.handleResponse(false, 500, "couldn't logout user");
       return res.send(result);
     }
   }
-  public async forgotPassword(
-    req: IGetUserAuthInfoRequest,
-    res: Response
-  ): Promise<any> {
+  public async forgotPassword(req: IGetUserAuthInfoRequest, res: Response): Promise<any> {
     try {
       const serviceInfo = await this.loginService.forgotPassword(req.body);
       let result: ApiResponse;
@@ -177,26 +159,15 @@ class LoginController implements ILoginControllerInterface {
         result = HandleResponse.handleResponse(true, 200, serviceInfo.message);
         return res.send(result);
       } else {
-        result = HandleResponse.handleResponse(
-          false,
-          500,
-          "fail to sent forgot password email"
-        );
+        result = HandleResponse.handleResponse(false, 500, "fail to sent forgot password email");
         return res.status(500).send(result);
       }
     } catch (err) {
-      const result: ApiResponse = HandleResponse.handleResponse(
-        false,
-        500,
-        "user not found"
-      );
+      const result: ApiResponse = HandleResponse.handleResponse(false, 500, "user not found");
       return res.send(result);
     }
   }
-  public async resetPassword(
-    req: IGetUserAuthInfoRequest,
-    res: Response
-  ): Promise<any> {
+  public async resetPassword(req: IGetUserAuthInfoRequest, res: Response): Promise<any> {
     try {
       const serviceInfo = await this.loginService.resetPassword(req.body);
       let result: ApiResponse;
@@ -205,50 +176,25 @@ class LoginController implements ILoginControllerInterface {
         result = HandleResponse.handleResponse(true, 200, serviceInfo.message);
         return res.send(result);
       } else {
-        result = HandleResponse.handleResponse(
-          false,
-          500,
-          "reset password failed"
-        );
+        result = HandleResponse.handleResponse(false, 500, "reset password failed");
         return res.status(500).send(result);
       }
     } catch (err) {
-      const result: ApiResponse = HandleResponse.handleResponse(
-        false,
-        500,
-        "reset password failed"
-      );
+      const result: ApiResponse = HandleResponse.handleResponse(false, 500, "reset password failed");
       return res.send(result);
     }
   }
-  public async getUserInfoByResetToken(
-    req: Request,
-    res: Response
-  ): Promise<any> {
+  public async getUserInfoByResetToken(req: Request, res: Response): Promise<any> {
     try {
       if (req?.query?.resettoken) {
-        const serviceInfo = await this.loginService.getUserInfoByResetToken(
-          req?.query?.resettoken
-        );
-        const result: ApiResponse = HandleResponse.handleResponse(
-          true,
-          200,
-          serviceInfo
-        );
+        const serviceInfo = await this.loginService.getUserInfoByResetToken(req?.query?.resettoken);
+        const result: ApiResponse = HandleResponse.handleResponse(true, 200, serviceInfo);
         return res.send(result);
       }
-      const result: ApiResponse = HandleResponse.handleResponse(
-        false,
-        400,
-        "user not found"
-      );
+      const result: ApiResponse = HandleResponse.handleResponse(false, 400, "user not found");
       return res.send(result);
     } catch (err) {
-      const result: ApiResponse = HandleResponse.handleResponse(
-        false,
-        500,
-        "fetch user failed"
-      );
+      const result: ApiResponse = HandleResponse.handleResponse(false, 500, "fetch user failed");
       return res.send(result);
     }
   }
